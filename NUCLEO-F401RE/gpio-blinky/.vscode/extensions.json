@@ -1,0 +1,20 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=827846 to learn about workspace recommendations.
+    // List of extensions which should be recommended for users of this workspace.
+    "recommendations": [
+        "rust-lang.rust-analyzer",
+        "serayuzgur.crates",
+        "tamasfe.even-better-toml",
+        "notblank00.hexeditor",
+        "vadimcn.vscode-lldb",
+        "probe-rs.probe-rs-debugger",
+        "mcu-debug.debug-tracker-vscode",
+        "mcu-debug.memory-view",
+        "mcu-debug.rtos-views",
+        "cortex-debug.svd-viewer",
+        "TabNine.tabnine-vscode",
+        "vscode-icons-team.vscode-icons"
+    ],
+    // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
+    "unwantedRecommendations": []
+}

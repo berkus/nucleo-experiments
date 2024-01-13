@@ -1,0 +1,12 @@
+[toolchain]
+channel = "nightly"
+components = ["clippy", "llvm-tools", "rust-src", "rustfmt"]
+# Pick ONE of these default compilation targets
+# targets = ["thumbv6m-none-eabi"]        # Cortex-M0 and Cortex-M0+
+# targets = ["thumbv7m-none-eabi"]        # Cortex-M3
+# targets = ["thumbv7em-none-eabi"]       # Cortex-M4 and Cortex-M7 (no FPU)
+# targets = ["thumbv7em-none-eabihf"]     # Cortex-M4F and Cortex-M7F (with FPU)
+# targets = ["thumbv8m.base-none-eabi"]   # Cortex-M23
+# targets = ["thumbv8m.main-none-eabi"]   # Cortex-M33 (no FPU)
+# targets = ["thumbv8m.main-none-eabihf"] # Cortex-M33 (with FPU)
+targets = ["thumbv7em-none-eabihf"]

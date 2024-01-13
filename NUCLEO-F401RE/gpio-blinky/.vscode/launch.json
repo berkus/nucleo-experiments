@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "probe-rs-debug",
+            "request": "launch",
+            "name": "Debug (probe-rs)",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "${defaultBuildTask}",
+            "connectUnderReset": false,
+            "chip": "STM32F401RET6U",
+            "runtimeArgs": [
+                "dap-server"
+            ],
+            "flashingConfig": {
+                "flashingEnabled": true,
+                "haltAfterReset": true
+            },
+            "coreConfigs": [
+                {
+                    "coreIndex": 0,
+                    "programBinary": "./target/thumbv7em-none-eabihf/debug/gpio-blinky-f4xx",
+                    "svdFile": "${workspaceRoot}/STM32F401.svd",
+                    "rttEnabled": true,
+                }
+            ],
+            "env": {
+                "DEFMT_LOG": "info",
+                "RUST_LOG": "info",
+            },
+            "consoleLogLevel": "Info",
+        },
+    ]
+}
