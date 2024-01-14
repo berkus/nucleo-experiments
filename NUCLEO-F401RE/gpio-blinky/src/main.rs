@@ -3,7 +3,7 @@
 
 use {
     cortex_m_rt::entry,
-    debounced_pin::{prelude::*, ActiveLow},
+    debouncr::{debounce_stateful_16, DebouncerStateful, Repeat16},
     defmt_rtt as _, panic_probe as _,
     stm32f4xx_hal::{
         gpio::Pin,
@@ -27,34 +27,35 @@ fn main() -> ! {
 
     let gpioc = dp.GPIOC.split();
     let button = gpioc.pc13;
-    let mut button = DebouncedInputPin::new(button, ActiveLow);
+
+    let mut button_state = debounce_stateful_16(false);
 
     let mut delay = 10_0000_u32;
 
     led.set_low();
 
     loop {
-        delay = loop_delay(delay, &mut button);
+        delay = loop_delay(delay, &button, &mut button_state);
         led.toggle();
     }
 }
 
 fn loop_delay<const P: char, const N: u8>(
     mut delay: u32,
-    button: &mut DebouncedInputPin<Pin<P, N>, ActiveLow>,
+    button: &Pin<P, N>,
+    button_state: &mut DebouncerStateful<u16, Repeat16>,
 ) -> u32 {
     defmt::println!("Waiting for {}", delay);
     for _ in 1..delay {
-        match button.update().expect("whatever") {
-            DebounceState::Active => {
-                delay -= 2_5000_u32;
-                if delay < 2_5000_u32 {
-                    delay = 10_0000_u32;
-                }
-                defmt::println!("delay: {}", delay);
-                return delay;
+        let is_pressed = button.is_low();
+        button_state.update(is_pressed);
+        if button_state.is_high() {
+            delay -= 2_5000_u32;
+            if delay < 2_5000_u32 {
+                delay = 10_0000_u32;
             }
-            _ => (),
+            defmt::println!("delay: {}", delay);
+            return delay;
         }
     }
     delay
