@@ -3,14 +3,17 @@
 
 use {
     cortex_m_rt::entry,
-    debouncr::{debounce_stateful_16, DebouncerStateful, Repeat16},
     defmt_rtt as _, panic_probe as _,
     stm32f4xx_hal::{
         gpio::Pin,
+        hal::digital::v2::InputPin,
         pac::{self},
         prelude::*,
     },
+    unflappable::{debouncer_uninit, default::ActiveLow, Debounced, Debouncer},
 };
+
+static DEBOUNCER: Debouncer<Pin<'C', 13>, ActiveLow> = debouncer_uninit!();
 
 // same panicking *behavior* as `panic-probe` but doesn't print a panic message
 // this prevents the panic message being printed *twice* when `defmt::panic` is invoked
@@ -28,28 +31,26 @@ fn main() -> ! {
     let gpioc = dp.GPIOC.split();
     let button = gpioc.pc13;
 
-    let mut button_state = debounce_stateful_16(false);
+    let debounced_button =
+        unsafe { DEBOUNCER.init(button) }.expect("failed to initialize debouncer");
 
     let mut delay = 10_0000_u32;
 
     led.set_low();
 
     loop {
-        delay = loop_delay(delay, &button, &mut button_state);
+        delay = loop_delay(delay, &debounced_button);
         led.toggle();
     }
 }
 
-fn loop_delay<const P: char, const N: u8>(
-    mut delay: u32,
-    button: &Pin<P, N>,
-    button_state: &mut DebouncerStateful<u16, Repeat16>,
-) -> u32 {
+fn loop_delay(mut delay: u32, debounced_button: &Debounced<'_, ActiveLow>) -> u32 {
     defmt::println!("Waiting for {}", delay);
     for _ in 1..delay {
-        let is_pressed = button.is_low();
-        button_state.update(is_pressed);
-        if button_state.is_high() {
+        unsafe {
+            DEBOUNCER.poll().expect("poll failed");
+        }
+        if debounced_button.is_low().expect("is high failed") {
             delay -= 2_5000_u32;
             if delay < 2_5000_u32 {
                 delay = 10_0000_u32;

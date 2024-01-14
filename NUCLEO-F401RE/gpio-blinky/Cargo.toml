@@ -11,7 +11,7 @@ stm32f4xx-hal = { version = "0.19", features = ["rt", "stm32f401"] }
 defmt = "0.3"
 defmt-rtt = "0.4"
 rtt-target = "0.5"
-debouncr = "0.2"
+unflappable = "0.2"
 
 [profile.dev]
 codegen-units = 1
