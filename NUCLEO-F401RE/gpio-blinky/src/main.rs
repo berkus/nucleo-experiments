@@ -3,13 +3,20 @@
 
 use {
     cortex_m_rt::entry,
-    panic_halt as _,
+    defmt_rtt as _, panic_probe as _,
     stm32f4xx_hal::{
         gpio::Pin,
         pac::{self},
         prelude::*,
     },
 };
+
+// same panicking *behavior* as `panic-probe` but doesn't print a panic message
+// this prevents the panic message being printed *twice* when `defmt::panic` is invoked
+#[defmt::panic_handler]
+fn panic() -> ! {
+    cortex_m::asm::udf()
+}
 
 #[entry]
 fn main() -> ! {
@@ -31,12 +38,14 @@ fn main() -> ! {
 }
 
 fn loop_delay<const P: char, const N: u8>(mut delay: u32, button: &Pin<P, N>) -> u32 {
+    defmt::println!("Waiting for {}", delay);
     for _ in 1..delay {
         if button.is_low() {
             delay -= 2_5000_u32;
             if delay < 2_5000_u32 {
                 delay = 10_0000_u32;
             }
+            defmt::println!("delay: {}", delay);
             return delay;
         }
     }
