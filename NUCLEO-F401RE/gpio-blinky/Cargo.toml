@@ -11,18 +11,19 @@ stm32f4xx-hal = { version = "0.19", features = ["rt", "stm32f401"] }
 defmt = "0.3"
 defmt-rtt = "0.4"
 rtt-target = "0.5"
+debounced-pin = "0.3"
 
 [profile.dev]
 codegen-units = 1
 debug = true
 incremental = false
-lto = false         # faster
+lto = false             # faster
 debug-assertions = true
 
 [profile.release]
-opt-level = 'z'     # optimize for space and speed
-codegen-units = 1   # better optimizations
-debug = true        # symbols are nice and they don't increase the size on Flash
-incremental = false # better optimizations
-lto = true          # better optimizations
+opt-level = 'z'          # optimize for space and speed
+codegen-units = 1        # better optimizations
+debug = true             # symbols are nice and they don't increase the size on Flash
+incremental = false      # better optimizations
+lto = true               # better optimizations
 debug-assertions = false
